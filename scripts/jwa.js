@@ -42,8 +42,7 @@ function formatAuthor(auth){
 
 function advancedSearch(query){
   let host = 'https://archive.org/advancedsearch.php?q='
-  // let query = 'q=creator%3A"Diamond%2C+Jared+M"+AND+title%3A"Collapse"+AND+publisher%3A"Penguin"'
-  let endsearch = '&fl%5B%5D=identifier&sort%5B%5D=&sort%5B%5D=&sort%5B%5D=&rows=50&page=1&output=json&callback=?&save=yes'
+  let endsearch = '&fl%5B%5D=identifier&sort%5B%5D=&sort%5B%5D=&sort%5B%5D=&rows=50&page=1&output=json&callback=callback&save=yes'
   let url = host+query+endsearch
   console.log(url)
   $.ajax({
@@ -51,8 +50,7 @@ function advancedSearch(query){
     type: 'GET',
     dataType: 'jsonp',
     crossDomain: true,
-    jsonpCallback: 'callback',
-    contentType: "application/json",
+    jsonp: 'callback'
   })
   .done(function(data) {
     console.log(data)
@@ -60,7 +58,4 @@ function advancedSearch(query){
   .fail(function(err) {
     console.log(err);
   })
-}
-function callback(json){
-  console.log(json)
 }
