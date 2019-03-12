@@ -1,0 +1,37 @@
+{
+    "name": "Internet Archive Citation Finder",
+    "version": "1.00",
+    "description": "Inserts links to the internet archive on citations across the Internet",
+    "permissions": [
+      "tabs",
+      "activeTab",
+      "declarativeContent",
+      "http://*/*",
+      "https://*/*",
+      "*://*/*",
+      "<all_urls>"
+    ],
+    "background": {
+      "scripts": ["scripts/background.js"],
+      "persistent": false
+    },
+    "content_scripts": [
+      {
+        "matches": [
+          "http://jwa.org/teach/*", "https://jwa.org/teach/*"
+        ],
+        "js": ["scripts/jquery.js", "scripts/jwa.js"]
+      }
+    ],
+    "options_page": "options.html",
+    "page_action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "32": "images/icon.png"
+      }
+    },
+    "icons": {
+      "32": "images/icon.png"
+    },
+    "manifest_version": 2
+  }
