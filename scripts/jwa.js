@@ -13,7 +13,7 @@ function findCitations(){
   for(let i = 0; i < candidates.length; i++){
     let citation = getCitation(candidates[i])
     if(citation){
-      advancedSearch(getAdvancedSearchQuery(citation))
+      advancedSearch(citation, candidates[i])
     }
   }
 }
@@ -40,20 +40,25 @@ function formatAuthor(auth){
   return names[1] + " " + names[0]
 }
 
-function advancedSearch(query){
+function advancedSearch(citation, cand){
+  query = getAdvancedSearchQuery(citation)
   let host = 'https://archive.org/advancedsearch.php?q='
-  let endsearch = '&fl%5B%5D=identifier&sort%5B%5D=&sort%5B%5D=&sort%5B%5D=&rows=50&page=1&output=json&callback=callback&save=yes'
+  let endsearch = '&fl%5B%5D=identifier&sort%5B%5D=&sort%5B%5D=&sort%5B%5D=&rows=50&page=1&output=json&save=yes'
   let url = host+query+endsearch
-  console.log(url)
   $.ajax({
     url: url,
     type: 'GET',
-    dataType: 'jsonp',
+    dataType: 'json',
     crossDomain: true,
     jsonp: 'callback'
   })
   .done(function(data) {
-    console.log(data)
+    if(data.response.docs.length>0){
+      let identifier = data.response.docs[0].identifier
+      cand.append(
+        $("<a>").prop({'href': 'https://archive.org/details/'+identifier}).text(" Read on the Internet Archive")[0]
+      )
+    }
   })
   .fail(function(err) {
     console.log(err);
