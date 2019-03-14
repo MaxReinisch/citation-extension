@@ -25,9 +25,12 @@ function getCitation(cit){
   }else{
     [author, ...rest] = str.split("<em>");
     [title, ...rest] = rest[0].split("</em>")
+    //TODO: get publisher
+    let pages = rest[0].slice(rest[0].indexOf(')')).split(',')
     return {
       author:author,
-      title:title
+      title:title,
+      pages: pages.filter($.isNumeric).map(Number)
     }
   }
 }
@@ -59,8 +62,12 @@ function advancedSearch(citation, cand){
   .done(function(data) {
     if(data.response.docs.length>0){
       let identifier = data.response.docs[0].identifier
+      let pagestring = ''
+      if (citation.pages){
+        pagestring = '/page/' + citation.pages[0]
+      }
       $(cand).html(
-        cand.innerHTML.replace('<em>', '<a href="https://archive.org/details/'+identifier +'"><em>').replace('</em>', '</em></a>')
+        cand.innerHTML.replace('<em>', '<a href="https://archive.org/details/'+identifier +pagestring+'"><em>').replace('</em>', '</em></a>')
       )
     }
   })
