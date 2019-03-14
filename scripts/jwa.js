@@ -9,27 +9,31 @@ $(document).ready(function() {
 });
 
 function findCitations(){
-  let candidates = $("a[id^='_ftn']").parent()
+  let candidates = $("a[href^='#_ftnref']").parent()
   for(let i = 0; i < candidates.length; i++){
-    let citation = getCitation(candidates[i])
+    let citation = getCitation(candidates[i].innerHTML)
     if(citation){
       advancedSearch(citation, candidates[i])
     }
   }
 }
 
-function getCitation(p){
-  let str = p.innerText;
-  let start = str.indexOf("]")+1;
-  if(str.slice(start).length == 0){
+function getCitation(cit){
+  str = cit.replace(/<a href="#_ftnref\d" name="_ftn\d" title="" id="_ftn\d">\[\d\]<\/a>/, '')
+  if(str.length == 0){
     return null
   }else{
-    return str.slice(start)
+    [author, ...rest] = str.split("<em>");
+    [title, ...rest] = rest[0].split("</em>")
+    return {
+      author:author,
+      title:title
+    }
   }
 }
 
-function getAdvancedSearchQuery(cit){
-  [author, title, ...rest] = cit.split(',')
+function getAdvancedSearchQuery(pcit){
+({author, title} = pcit)
   //format author
   author = formatAuthor(author)
   return 'creator:"'+author+'" AND title:"'+title+'"'
@@ -55,12 +59,17 @@ function advancedSearch(citation, cand){
   .done(function(data) {
     if(data.response.docs.length>0){
       let identifier = data.response.docs[0].identifier
-      cand.append(
-        $("<a>").prop({'href': 'https://archive.org/details/'+identifier}).text(" Read on the Internet Archive")[0]
+      $(cand).html(
+        cand.innerHTML.replace('<em>', '<a href="https://archive.org/details/'+identifier +'"><em>').replace('</em>', '</em></a>')
       )
     }
   })
   .fail(function(err) {
     console.log(err);
   })
+}
+if (typeof module !== 'undefined') {
+  module.exports = {
+    getCitation:getCitation
+  }
 }
